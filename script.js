@@ -85,15 +85,14 @@ function generateModulatedSignal(timePoints, messageSignal, carrierSignal) {
 }
 
 // Generate envelope
-function generateEnvelope(timePoints, modulatedSignal) {
+function generateEnvelope(timePoints, messageSignal) {
     const upperEnvelope = [];
     const lowerEnvelope = [];
+    const carrierAmp = parseFloat(carrierAmpInput.value);
     
     for (let i = 0; i < timePoints.length; i++) {
-        const carrier = carrierAmpInput.value;
-        const message = messageSignal[i];
-        upperEnvelope.push(carrier * (1 + message));
-        lowerEnvelope.push(-carrier * (1 + message));
+        upperEnvelope.push(carrierAmp * (1 + messageSignal[i]));
+        lowerEnvelope.push(-carrierAmp * (1 + messageSignal[i]));
     }
     
     return { upper: upperEnvelope, lower: lowerEnvelope };
@@ -102,23 +101,22 @@ function generateEnvelope(timePoints, modulatedSignal) {
 // Generate demodulated signal
 function generateDemodulatedSignal(timePoints, modulatedSignal) {
     const demodulated = [];
-    const samplingRate = 1000; // Match the sampling rate from updateCharts
-    const windowSize = Math.floor(samplingRate / (2 * parseFloat(carrierFreqInput.value)));
+    const samplingRate = 1000;
+    const carrierFreq = parseFloat(carrierFreqInput.value);
+    const windowSize = Math.floor(samplingRate / (2 * carrierFreq));
     
-    // Moving average filter for envelope detection
+    // Peak detection with moving window
     for (let i = 0; i < modulatedSignal.length; i++) {
-        let sum = 0;
-        let count = 0;
+        let peakValue = 0;
         
-        // Calculate average of absolute values in the window
+        // Find peak in the window
         for (let j = Math.max(0, i - windowSize); j < Math.min(modulatedSignal.length, i + windowSize); j++) {
-            sum += Math.abs(modulatedSignal[j]);
-            count++;
+            peakValue = Math.max(peakValue, Math.abs(modulatedSignal[j]));
         }
         
-        // Subtract DC offset and scale
+        // Convert peak to message value
         const carrierAmp = parseFloat(carrierAmpInput.value);
-        demodulated.push((sum / count) - carrierAmp);
+        demodulated.push((peakValue / carrierAmp) - 1);
     }
     
     return demodulated;
@@ -161,7 +159,7 @@ function updateCharts() {
     );
     
     const modulatedSignal = generateModulatedSignal(timePoints, messageSignal, carrierSignal);
-    const envelope = generateEnvelope(timePoints, modulatedSignal);
+    const envelope = generateEnvelope(timePoints, messageSignal);
     const demodulatedSignal = generateDemodulatedSignal(timePoints, modulatedSignal);
     
     // Update message signal chart
@@ -202,7 +200,7 @@ function updateCharts() {
             {
                 label: 'Upper Envelope',
                 data: envelope.upper,
-                borderColor: 'rgba(255, 99, 132, 0.8)',
+                borderColor: 'rgb(255, 0, 0)',
                 borderWidth: 2,
                 pointRadius: 0,
                 borderDash: [5, 5],
@@ -211,7 +209,7 @@ function updateCharts() {
             {
                 label: 'Lower Envelope',
                 data: envelope.lower,
-                borderColor: 'rgba(255, 99, 132, 0.8)',
+                borderColor: 'rgb(255, 0, 0)',
                 borderWidth: 2,
                 pointRadius: 0,
                 borderDash: [5, 5],
@@ -227,7 +225,7 @@ function updateCharts() {
             label: 'Demodulated Signal',
             data: demodulatedSignal,
             borderColor: 'rgb(153, 102, 255)',
-            borderWidth: 1,
+            borderWidth: 2,
             pointRadius: 0
         }]
     };
