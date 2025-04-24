@@ -202,18 +202,20 @@ function updateCharts() {
             {
                 label: 'Upper Envelope',
                 data: envelope.upper,
-                borderColor: 'rgba(255, 99, 132, 0.5)',
-                borderWidth: 1,
+                borderColor: 'rgba(255, 99, 132, 0.8)',
+                borderWidth: 2,
                 pointRadius: 0,
-                borderDash: [5, 5]
+                borderDash: [5, 5],
+                fill: false
             },
             {
                 label: 'Lower Envelope',
                 data: envelope.lower,
-                borderColor: 'rgba(255, 99, 132, 0.5)',
-                borderWidth: 1,
+                borderColor: 'rgba(255, 99, 132, 0.8)',
+                borderWidth: 2,
                 pointRadius: 0,
-                borderDash: [5, 5]
+                borderDash: [5, 5],
+                fill: false
             }
         ]
     };
