@@ -103,23 +103,46 @@ function generateDemodulatedSignal(timePoints, modulatedSignal) {
     const demodulated = [];
     const samplingRate = 1000;
     const carrierFreq = parseFloat(carrierFreqInput.value);
-    const windowSize = Math.floor(samplingRate / (2 * carrierFreq));
+    const carrierAmp = parseFloat(carrierAmpInput.value);
+    const windowSize = Math.floor(samplingRate / carrierFreq);
     
-    // Peak detection with moving window
-    for (let i = 0; i < modulatedSignal.length; i++) {
-        let peakValue = 0;
+    // Rectify the signal (full-wave rectification)
+    const rectifiedSignal = modulatedSignal.map(val => Math.abs(val));
+    
+    // Low-pass filtering using moving average
+    for (let i = 0; i < rectifiedSignal.length; i++) {
+        let sum = 0;
+        let count = 0;
         
-        // Find peak in the window
-        for (let j = Math.max(0, i - windowSize); j < Math.min(modulatedSignal.length, i + windowSize); j++) {
-            peakValue = Math.max(peakValue, Math.abs(modulatedSignal[j]));
+        // Calculate average over one carrier period
+        for (let j = Math.max(0, i - windowSize); j < Math.min(rectifiedSignal.length, i + windowSize); j++) {
+            sum += rectifiedSignal[j];
+            count++;
         }
         
-        // Convert peak to message value
-        const carrierAmp = parseFloat(carrierAmpInput.value);
-        demodulated.push((peakValue / carrierAmp) - 1);
+        // Scale the output to match the original message amplitude
+        const avgValue = sum / count;
+        const messageValue = (avgValue / carrierAmp) - 1;
+        demodulated.push(messageValue);
     }
     
-    return demodulated;
+    // Additional smoothing
+    const smoothedSignal = [];
+    const smoothingWindow = Math.floor(samplingRate / (10 * parseFloat(messageFreqInput.value)));
+    
+    for (let i = 0; i < demodulated.length; i++) {
+        let sum = 0;
+        let count = 0;
+        
+        for (let j = Math.max(0, i - smoothingWindow); j < Math.min(demodulated.length, i + smoothingWindow); j++) {
+            sum += demodulated[j];
+            count++;
+        }
+        
+        smoothedSignal.push(sum / count);
+    }
+    
+    return smoothedSignal;
 }
 
 // Update modulation information
