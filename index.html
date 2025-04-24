@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amplitude Modulation Simulator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Amplitude Modulation Simulator</h1>
+        
+        <div class="controls">
+            <div class="control-group">
+                <h3>Message Signal Controls</h3>
+                <div>
+                    <label for="messageFreq">Message Frequency (Hz):</label>
+                    <input type="range" id="messageFreq" min="1" max="10" value="2" step="0.1">
+                    <span id="messageFreqValue">2 Hz</span>
+                </div>
+                <div>
+                    <label for="messageAmp">Message Amplitude:</label>
+                    <input type="range" id="messageAmp" min="0.1" max="1" value="0.5" step="0.1">
+                    <span id="messageAmpValue">0.5</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Carrier Signal Controls</h3>
+                <div>
+                    <label for="carrierFreq">Carrier Frequency (Hz):</label>
+                    <input type="range" id="carrierFreq" min="10" max="50" value="20" step="1">
+                    <span id="carrierFreqValue">20 Hz</span>
+                </div>
+                <div>
+                    <label for="carrierAmp">Carrier Amplitude:</label>
+                    <input type="range" id="carrierAmp" min="0.1" max="2" value="1" step="0.1">
+                    <span id="carrierAmpValue">1</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="modulation-info">
+            <h3>Modulation Information</h3>
+            <p>Modulation Index: <span id="modulationIndex">0</span></p>
+            <p>Modulation Type: <span id="modulationType">-</span></p>
+        </div>
+
+        <div class="graphs">
+            <div class="graph-container">
+                <h3>Message Signal</h3>
+                <canvas id="messageSignal"></canvas>
+            </div>
+            <div class="graph-container">
+                <h3>Carrier Signal</h3>
+                <canvas id="carrierSignal"></canvas>
+            </div>
+            <div class="graph-container">
+                <h3>Modulated Signal with Envelope</h3>
+                <canvas id="modulatedSignal"></canvas>
+            </div>
+            <div class="graph-container">
+                <h3>Demodulated Signal</h3>
+                <canvas id="demodulatedSignal"></canvas>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 
